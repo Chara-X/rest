@@ -1,0 +1,23 @@
+[package]
+name = "rest"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dev-dependencies]
+openapiv3 = "*"
+schemars = "1.0.0-alpha.17"
+reqwest = { version = "*", features = [
+    "blocking",
+    "json",
+], default-features = false }
+indexmap = "*"
+
+[dependencies]
+quote = "*"
+syn = { version = "*", features = ["full"] }
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+proc-macro2 = "*"
