@@ -40,14 +40,14 @@ impl parse::Parse for Api {
                         Some(syn::Expr::Lit(syn::ExprLit {
                             lit: syn::Lit::Str(lit),
                             ..
-                        })) => lit.value(),
+                        })) => lit.value().to_lowercase(),
                         _ => panic!(),
                     };
                     let path = match args.get(1) {
                         Some(syn::Expr::Lit(syn::ExprLit {
                             lit: syn::Lit::Str(lit),
                             ..
-                        })) => lit.value(),
+                        })) => lit.value().to_lowercase(),
                         _ => panic!(),
                     };
                     let input = match args.get(2) {

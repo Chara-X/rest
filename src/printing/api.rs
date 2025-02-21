@@ -1,4 +1,6 @@
 use super::*;
+use crate::parsing;
+use std::path;
 pub struct Api {
     pub url: String,
     pub ops: Vec<Op>,
@@ -28,5 +30,54 @@ impl quote::ToTokens for Api {
                 #(#ops)*
             }
         });
+    }
+}
+impl From<parsing::Api> for Api {
+    fn from(value: parsing::Api) -> Self {
+        Api {
+            url: value.url.clone(),
+            ops: value
+                .ops
+                .iter()
+                .map(|op| Op {
+                    name: syn::Ident::new(
+                        &format!("{}{}", op.method, op.path)
+                            .replace("/", "_")
+                            .replace("-", "_")
+                            .replace("{", "")
+                            .replace("}", ""),
+                        proc_macro2::Span::call_site(),
+                    ),
+                    method: syn::Ident::new(&op.method, proc_macro2::Span::call_site()),
+                    path: op.path.clone(),
+                    parameters: path::Path::new(&op.path)
+                        .components()
+                        .map(|x| x.as_os_str().to_str().unwrap())
+                        .filter(|x| x.starts_with("{") && x.ends_with("}"))
+                        .map(|x| {
+                            syn::Ident::new(&x[1..x.len() - 1], proc_macro2::Span::call_site())
+                        })
+                        .collect(),
+                    input: op.input.clone(),
+                    output: op.output.clone(),
+                })
+                .collect(),
+            openapi: OpenApi {
+                title: value.title,
+                version: value.version,
+                description: value.description,
+                url: value.url,
+                operations: value
+                    .ops
+                    .iter()
+                    .map(|op| Operation {
+                        method: syn::Ident::new(&op.method, proc_macro2::Span::call_site()),
+                        path: op.path.clone(),
+                        input: op.input.clone(),
+                        output: op.output.clone(),
+                    })
+                    .collect(),
+            },
+        }
     }
 }
