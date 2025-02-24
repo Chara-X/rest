@@ -9,9 +9,13 @@ rest::client!({
         description: "My API",
     };
     server { url: "/api/v1" };
+    /// 1
     op("POST", "/users", User, ());
+    /// 1
     op("GET", "/users/{id}", (), User);
+    /// 1
     op("POST", "/users/swap", User, User);
+    /// 1
     op("DELETE", "/users/empty", (), ());
 });
 #[test]

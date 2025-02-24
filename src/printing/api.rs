@@ -71,6 +71,7 @@ impl From<parsing::Api> for Api {
                     .ops
                     .iter()
                     .map(|op| Operation {
+                        description: op.description.clone(),
                         method: syn::Ident::new(&op.method, proc_macro2::Span::call_site()),
                         path: op.path.clone(),
                         input: op.input.clone(),

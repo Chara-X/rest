@@ -1,5 +1,6 @@
 #[derive(Default)]
 pub struct Op {
+    pub description: String,
     pub method: String,
     pub path: String,
     pub input: Option<syn::Path>,

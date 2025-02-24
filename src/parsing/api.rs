@@ -35,7 +35,22 @@ impl parse::Parse for Api {
                         }
                     }
                 }
-                syn::Stmt::Expr(syn::Expr::Call(syn::ExprCall { args, .. }), ..) => {
+                syn::Stmt::Expr(syn::Expr::Call(syn::ExprCall { attrs, args, .. }), ..) => {
+                    let description = match attrs.first() {
+                        Some(syn::Attribute {
+                            meta:
+                                syn::Meta::NameValue(syn::MetaNameValue {
+                                    value:
+                                        syn::Expr::Lit(syn::ExprLit {
+                                            lit: syn::Lit::Str(lit),
+                                            ..
+                                        }),
+                                    ..
+                                }),
+                            ..
+                        }) => lit.value(),
+                        _ => panic!(),
+                    };
                     let method = match args.get(0) {
                         Some(syn::Expr::Lit(syn::ExprLit {
                             lit: syn::Lit::Str(lit),
@@ -59,6 +74,7 @@ impl parse::Parse for Api {
                         _ => None,
                     };
                     api.ops.push(Op {
+                        description,
                         method,
                         path,
                         input,

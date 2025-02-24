@@ -1,4 +1,5 @@
 pub struct Operation {
+    pub description: String,
     pub method: syn::Ident,
     pub path: String,
     pub input: Option<syn::Path>,
@@ -6,6 +7,7 @@ pub struct Operation {
 }
 impl quote::ToTokens for Operation {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        let description = &self.description;
         let method = &self.method;
         let path = &self.path;
         let input = match &self.input {
@@ -43,6 +45,7 @@ impl quote::ToTokens for Operation {
             if let openapiv3::ReferenceOr::Item(path) = openapi.paths.paths.entry(#path.to_string()).or_insert(openapiv3::ReferenceOr::Item(openapiv3::PathItem::default()))
             {
                 path.#method = Some(openapiv3::Operation {
+                    description: Some(#description.to_string()),
                     parameters: parameters(#path),
                     #input
                     #output

@@ -13,7 +13,9 @@ rest::client!({
     server {
         url: "/api/v1",
     };
+    /// Create a new user
     op("POST", "/users", msg::User, ());
+    /// Get a user
     op("GET", "/users/{id}", (), msg::User);
 });
 ```
