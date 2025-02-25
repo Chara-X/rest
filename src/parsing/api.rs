@@ -36,7 +36,7 @@ impl parse::Parse for Api {
                     }
                 }
                 syn::Stmt::Expr(syn::Expr::Call(syn::ExprCall { attrs, args, .. }), ..) => {
-                    let description = match attrs.first() {
+                    let summary = match attrs.first() {
                         Some(syn::Attribute {
                             meta:
                                 syn::Meta::NameValue(syn::MetaNameValue {
@@ -74,7 +74,7 @@ impl parse::Parse for Api {
                         _ => None,
                     };
                     api.ops.push(Op {
-                        description,
+                        summary,
                         method,
                         path,
                         input,
