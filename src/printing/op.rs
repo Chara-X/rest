@@ -18,25 +18,26 @@ impl quote::ToTokens for Op {
         };
         let output = match &self.output {
             Some(output) => quote::quote! {#output},
-            None => quote::quote! {blocking::Response},
+            None => quote::quote! {reqwest::Response},
         };
         let json = match &self.input {
             Some(_) => quote::quote! {.json(body)},
             None => quote::quote! {},
         };
         let ret = match &self.output {
-            Some(_) => quote::quote! {res.json()},
+            Some(_) => quote::quote! {res.json().await},
             None => quote::quote! {Ok(res)},
         };
         tokens.extend(quote::quote! {
-            pub fn #name(&self #(, #parameters: &str)* #input) -> reqwest::Result<#output> {
+            pub async fn #name(&self #(, #parameters: &str)* #input) -> reqwest::Result<#output> {
                 let res = self
                 .client
                 .#method(format!(#url, self.addr))
                 #json
-                .send()?;
+                .send()
+                .await?;
                 if let Err(err) = res.error_for_status_ref() {
-                    eprintln!("{}", res.text().unwrap());
+                    eprintln!("{}", res.text().await.unwrap());
                     return Err(err);
                 }
                 #ret

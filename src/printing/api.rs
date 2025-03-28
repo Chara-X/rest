@@ -13,15 +13,16 @@ impl quote::ToTokens for Api {
         let openapi = &self.openapi;
         tokens.extend(quote::quote! {
             use std::path;
-            use reqwest::blocking;
+            use reqwest;
             use schemars::generate;
+            #[derive(Clone)]
             pub struct Client {
-                pub client: blocking::Client,
+                pub client: reqwest::Client,
                 pub addr: String,
             }
             impl Client {
                 #openapi
-                pub fn new(client: blocking::Client, addr: &str) -> Self {
+                pub fn new(client: reqwest::Client, addr: &str) -> Self {
                     Self {
                         client,
                         addr: format!("{}{}", addr, #url),
